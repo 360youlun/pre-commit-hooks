@@ -29,6 +29,7 @@ setup(
         'flake8!=2.5.3',
         'argparse',
         'autopep8>=1.1',
+        'pylint>=1.5.5',
         'pyyaml',
         'simplejson',
         'six',
@@ -36,6 +37,7 @@ setup(
     entry_points={
         'console_scripts': [
             'autopep8-wrapper = pre_commit_hooks.autopep8_wrapper:main',
+            'pylint-wrapper = pre_commit_hooks.pylint_wrapper:main',
             'check-added-large-files = pre_commit_hooks.check_added_large_files:main',
             'check-ast = pre_commit_hooks.check_ast:check_ast',
             'check-byte-order-marker = pre_commit_hooks.check_byte_order_marker:main',
