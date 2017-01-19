@@ -61,6 +61,7 @@ setup(
             'requirements-txt-fixer = pre_commit_hooks.requirements_txt_fixer:fix_requirements_txt',
             'wheels = pre_commit_hooks.fix_wheels:main',
             'trailing-whitespace-fixer = pre_commit_hooks.trailing_whitespace_fixer:fix_trailing_whitespace',
+            'project-mapping = pre_commit_hooks.project_mapping:main',
         ],
     },
 )

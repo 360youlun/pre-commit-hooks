@@ -163,3 +163,8 @@
     entry: wheels
     language: python
     files: requirements.*\.txt$
+-   id: project-mapping
+    name: check project mapping
+    entry: project-mapping
+    language: python
+    files: ''
