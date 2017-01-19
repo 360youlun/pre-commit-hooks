@@ -153,3 +153,8 @@
     entry: pylint-wrapper
     language: python
     files: \.py$
+-   id: jscs
+    name: jscs
+    entry: jscs
+    language: python
+    files: \.js$
