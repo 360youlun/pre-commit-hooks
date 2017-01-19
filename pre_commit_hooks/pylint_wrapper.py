@@ -1,15 +1,43 @@
+from __future__ import with_statement
 import argparse
+import collections
 import re
-import sys
+import subprocess
 
-from pylint import epylint as lint
+ExecutionResult = collections.namedtuple(
+    'ExecutionResult',
+    'status, stdout, stderr'
+)
 
 
 def get_score(stdout):
     rate_regexp = re.compile(r'^Your code has been rated at (\-?[0-9\.]+)/10', re.MULTILINE)
     rate = rate_regexp.findall(stdout)
-
     return float(rate[0]) if rate else 0
+
+
+def execute(cmd, **kwargs):
+    splitted_cmd = cmd.split()
+    kwargs.setdefault('stdout', subprocess.PIPE)
+    kwargs.setdefault('stderr', subprocess.PIPE)
+    try:
+        process = subprocess.Popen(splitted_cmd, **kwargs)
+        stdout, stderr = process.communicate()
+        return ExecutionResult(0, stdout, stderr)
+    except OSError as e:
+        print "Command exec error: '%s' %s" % (cmd, e)
+        return ExecutionResult(1, '', '')
+
+
+def pylint_check(pylint_conf, reports, pylint_report, files):
+    files_string = " ".join(files)
+    result = execute('pylint --rcfile=%s -r %s %s' % (pylint_conf, reports, files_string))
+    with open(pylint_report, 'w') as f:
+        f.write(result.stderr)
+        f.write(result.stdout)
+    if result.status:
+        return 0
+    return get_score(result.stdout)
 
 
 def main(argv=None):
@@ -23,23 +51,11 @@ def main(argv=None):
         help='Filenames pre-commit believes are changed.'
     )
     args = parser.parse_args(argv)
-    files = " ".join(args.filenames)
-    stdout, stderr = lint.py_run("{} --rcfile {} --reports {}".format(files, args.rcfile, args.reports),
-                                 return_std=True)
-    return_value = 0
-    with open(args.report_file, 'w') as pylint_report:
-        if stderr:
-            print 'test'
-            print stderr.read()
-            pylint_report.write(stderr.read())
-            return_value = 1
-        else:
-            pylint_report.write(stdout.read())
-            score = get_score(stdout.read())
-            if score < args.score:
-                print "=== PYLINT score: {:.2}/10.00".format(float(score))
-                return_value = 1
-    return return_value
+    score = pylint_check(args.rcfile, args.reports, args.report_file, args.filenames)
+    if score < args.score:
+        print "=== PYLINT score: {:.2}/10.00".format(float(score))
+        return 1
+    return 0
 
 
 if __name__ == '__main__':
