@@ -158,3 +158,8 @@
     entry: jscs
     language: python
     files: \.js$
+-   id: wheels
+    name: wheels
+    entry: wheels
+    language: python
+    files: requirements.*\.txt$

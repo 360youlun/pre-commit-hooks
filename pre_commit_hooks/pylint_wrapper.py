@@ -1,32 +1,15 @@
 from __future__ import with_statement
-import argparse
-import collections
-import re
-import subprocess
 
-ExecutionResult = collections.namedtuple(
-    'ExecutionResult',
-    'status, stdout, stderr'
-)
+import argparse
+import re
+
+from pre_commit_hooks.util import execute
 
 
 def get_score(stdout):
     rate_regexp = re.compile(r'^Your code has been rated at (\-?[0-9\.]+)/10', re.MULTILINE)
     rate = rate_regexp.findall(stdout)
     return float(rate[0]) if rate else 0
-
-
-def execute(cmd, **kwargs):
-    splitted_cmd = cmd.split()
-    kwargs.setdefault('stdout', subprocess.PIPE)
-    kwargs.setdefault('stderr', subprocess.PIPE)
-    try:
-        process = subprocess.Popen(splitted_cmd, **kwargs)
-        stdout, stderr = process.communicate()
-        return ExecutionResult(0, stdout, stderr)
-    except OSError as e:
-        print "Command exec error: '%s' %s" % (cmd, e)
-        return ExecutionResult(1, '', '')
 
 
 def pylint_check(pylint_conf, reports, pylint_report, files):
