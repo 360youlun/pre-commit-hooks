@@ -28,7 +28,7 @@ def main(argv=None):
     parser.add_argument('--rcfile')
     parser.add_argument('--reports')
     parser.add_argument('--report-file', default='pylint-report.txt')
-    parser.add_argument('--score', type=float, default=9.5)
+    parser.add_argument('--score', type=float, default=0)
     parser.add_argument(
         'filenames', nargs='*',
         help='Filenames pre-commit believes are changed.'
